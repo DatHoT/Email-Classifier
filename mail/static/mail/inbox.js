@@ -33,7 +33,7 @@ function composeEmail(recipients="", subject="", body="", focus=false) {
   document.querySelector("#email").style.display = "none";
   document.querySelector("#emails-view").style.display = "none";
   document.querySelector("#compose-view").style.display = "block";
-  
+
   // Change navbar active tab
   $("a").removeClass("active");
   $("#compose").addClass("active");
@@ -58,7 +58,7 @@ function loadMailbox(mailbox) {
   // Change navbar active tab
   $("a").removeClass("active");
   $(`#${mailbox}`).addClass("active");
-  
+
   // Query the API for the emails in specified mailbox
   fetch(`/emails/${mailbox}`)
   .then(response => response.json())
@@ -73,7 +73,7 @@ function loadMailbox(mailbox) {
               <span class="recipients">${email.recipients}</span> <span class="subject">${email.subject}</span> <span class="timestamp">${email.timestamp}</span>
             `;
           } else {
-            element.innerHTML = ` 
+            element.innerHTML = `
               <span class="recipients">${email.sender}</span> <span class="subject">${email.subject}</span> <span class="timestamp">${email.timestamp}</span>
             `;
           }
@@ -85,7 +85,7 @@ function loadMailbox(mailbox) {
     }
   })
   .catch(error => console.log(error));
-  
+
   // Show the mailbox and hide other views
   document.querySelector("#emails-view").style.display = "block";
   document.querySelector("#compose-view").style.display = "none";
@@ -102,7 +102,7 @@ function loadEmail(email, emailType) {
 
   // Display the individual email div
   document.querySelector("#email").style.display = "block";
-  
+
   // Display archive button if not viewing Sent emails
   if (emailType !== "sent") {
     archiveStatus = document.querySelector("#archive-status");
@@ -134,7 +134,6 @@ function loadEmail(email, emailType) {
 }
 
 function sendEmail(recipients, subject, body) {
-
   fetch("/emails", {
     method: "POST",
     body: JSON.stringify({

@@ -1,4 +1,5 @@
 import json
+import joblib
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
@@ -19,7 +20,6 @@ def index(request):
     # Everyone else is prompted to sign in
     else:
         return HttpResponseRedirect(reverse("login"))
-
 
 @csrf_exempt
 @login_required
@@ -51,6 +51,15 @@ def compose(request):
     # Get contents of email
     subject = data.get("subject", "")
     body = data.get("body", "")
+    spamstatus = False
+    nbmodel = joblib.load("/home/datprotp03/myemailsystem/mail/emailclassifier/model.pkl")
+    cv = joblib.load("/home/datprotp03/myemailsystem/mail/emailclassifier/vectorizer.pkl")
+    content = subject + " " + body
+    transformed = cv.transform([content])
+    prediction =  nbmodel.predict(transformed)
+    if(prediction=="spam"):
+        spamstatus = True
+    else: spamstatus = False
 
     # Create one email for each recipient, plus sender
     users = set()
@@ -62,7 +71,8 @@ def compose(request):
             sender=request.user,
             subject=subject,
             body=body,
-            read=user == request.user
+            read=user == request.user,
+            archived=spamstatus
         )
         email.save()
         for recipient in recipients:
